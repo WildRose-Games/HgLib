@@ -21,7 +21,7 @@ void hgArenaPop(HgArena *hgArena, uint64_t freeSize);
 
 void hgArenaPopAll(HgArena *hgArena);
 
-#define HGL_MEM_PAD 16
+#define HGL_MEM_MULTIPLE 16
 
 #endif /* HGL_MEM_H */
 
@@ -35,8 +35,8 @@ void* hgArenaPush(HgArena *arena, uint64_t allocSize){
   }
   uint64_t oldPosition = arena->position;
   uint64_t newPosition = allocSize;
-  if(newPosition % HGL_MEM_PAD != 0){
-    newPosition += HGL_MEM_PAD - (newPosition % HGL_MEM_PAD);
+  if(newPosition % HGL_MEM_MULTIPLE != 0){
+    newPosition += HGL_MEM_MULTIPLE - (newPosition % HGL_MEM_MULTIPLE);
   }
   arena->position += newPosition;
   return arena->memory + oldPosition;
@@ -55,8 +55,8 @@ void hgArenaPop(HgArena *arena, uint64_t freeSize){
     return;
   }
   uint16_t newPosition = freeSize;
-  if(newPosition % HGL_MEM_PAD != 0){
-    newPosition += HGL_MEM_PAD - (newPosition % HGL_MEM_PAD);
+  if(newPosition % HGL_MEM_MULTIPLE != 0){
+    newPosition += HGL_MEM_MULTIPLE - (newPosition % HGL_MEM_MULTIPLE);
   }
   arena->position -= newPosition;
 }

@@ -66,7 +66,11 @@ typedef enum HglLogType{
   HGL_LOG_FTL
 }HglLogType;
 
-void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...);
+void HGL_LogFunc(HglLogType err,
+                 const char* file,
+                 int line,
+                 const char* fmt,
+                 ...);
 
 
 #ifdef _MSC_VER /* Windows */
@@ -159,7 +163,11 @@ void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...);
  * hg_logFunction should not be called manually, use helper macros.
  */
 
-void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...){
+void HGL_LogFunc(HglLogType err,
+                 const char* file,
+                 int line,
+                 const char* fmt,
+                 ...){
   
   char msg[HGL_LOG_LENGTH];
   va_list args;
