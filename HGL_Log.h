@@ -55,6 +55,8 @@
 
 #define HGL_LOG_BUILD_IN_RELEASE
 
+#define HGL_LOG_USE_COLOR
+
 /*Don;t use HglLogType or HGL_LogFunc directly*/
 typedef enum HglLogType{
   HGL_LOG_DBG,
@@ -65,6 +67,32 @@ typedef enum HglLogType{
 }HglLogType;
 
 void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...);
+
+#ifdef HGL_LOG_USE_COLOR
+
+#define HGL_LOG_BLACK_COLOR "\033[1;30m"
+#define HGL_LOG_RED_COLOR "\033[1;31m"
+#define HGL_LOG_GREEN_COLOR "\033[1;32m"
+#define HGL_LOG_YELLOW_COLOR "\033[1;33m"
+#define HGL_LOG_BLUE_COLOR "\033[1;34m"
+#define HGL_LOG_MAGENTA_COLOR "\033[1;35m"
+#define HGL_LOG_CYAN_COLOR "\033[1;36m"
+#define HGL_LOG_WHITE_COLOR "\033[1;37m"
+#define HGL_LOG_RESET_COLOR "\033[1;0m"
+
+#else
+
+#define HGL_LOG_BLACK_COLOR ""
+#define HGL_LOG_RED_COLOR ""
+#define HGL_LOG_GREEN_COLOR ""
+#define HGL_LOG_YELLOW_COLOR ""
+#define HGL_LOG_BLUE_COLOR ""
+#define HGL_LOG_MAGENTA_COLOR ""
+#define HGL_LOG_CYAN_COLOR ""
+#define HGL_LOG_WHITE_COLOR ""
+#define HGL_LOG_RESET_COLOR ""
+
+#endif /* HGL_LOG_USE_COLOR */
 
 #ifdef HG_DEBUG 
 
@@ -104,6 +132,8 @@ void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...);
 #endif /* HG_DEBUG */
 #endif /* HGL_LOG_H */
 
+/**************************************************************************/
+
 #ifdef HGL_LOG_IMPLEMENTATION
 
 /* Set the max char length of one log message here: */
@@ -122,52 +152,80 @@ void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...){
   
   char msg[HGL_LOG_LENGTH];
   va_list args;
+  int isErr = 0;
 
   switch(err){
   case HGL_LOG_DBG:
     snprintf(msg,
              HGL_LOG_LENGTH,
-             "\033[0;36m[DEBUG] \033[0;37m%s %d: \033[0;0m%s\n",
+             "%sdbg %s(%s %d): %s%s%s\n",
+             HGL_LOG_GREEN_COLOR,
+             HGL_LOG_RESET_COLOR,
              file + HGL_LOG_FILE_OFFSET,
              line,
-             fmt);
+             HGL_LOG_WHITE_COLOR,
+             fmt,
+             HGL_LOG_RESET_COLOR);
     break;
   case HGL_LOG_LOG:
     snprintf(msg,
              HGL_LOG_LENGTH,
-             "\033[0;32m[LOG] \033[0;37m%s %d: \033[0;0m%s\n",
+             "%slog %s(%s %d): %s%s%s\n",
+             HGL_LOG_CYAN_COLOR,
+             HGL_LOG_RESET_COLOR,
              file + HGL_LOG_FILE_OFFSET,
              line,
-             fmt);
+             HGL_LOG_WHITE_COLOR,
+             fmt,
+             HGL_LOG_RESET_COLOR);
     break;
   case HGL_LOG_WRN:
+    isErr = 1;
     snprintf(msg, 
              HGL_LOG_LENGTH, 
-             "\033[0;33m[WARN] \033[0;37m%s %d: \033[0;0m%s\n",
+             "%sWARN %s(%s %d): %s%s%s\n",
+             HGL_LOG_YELLOW_COLOR,
+             HGL_LOG_RESET_COLOR,
              file + HGL_LOG_FILE_OFFSET,
              line,
-             fmt);
+             HGL_LOG_WHITE_COLOR,
+             fmt,
+             HGL_LOG_RESET_COLOR);
     break;
   case HGL_LOG_ERR:
+    isErr = 1;
     snprintf(msg,
              HGL_LOG_LENGTH,
-             "\033[0;35m[ERROR] \033[0;37m%s %d: \033[0;0m%s\n",
+             "%sERROR! %s(%s %d): %s%s%s\n",
+             HGL_LOG_RED_COLOR,
+             HGL_LOG_RESET_COLOR,
              file + HGL_LOG_FILE_OFFSET,
              line,
-             fmt);
+             HGL_LOG_WHITE_COLOR,
+             fmt,
+             HGL_LOG_RESET_COLOR);
     break;
   case HGL_LOG_FTL:
+    isErr = 1;
     snprintf(msg,
              HGL_LOG_LENGTH,
-             "\033[31m[FATAL] \033[0;37m%s %d: \033[0;0m%s\n",
+             "%sFATAL!!! %s(%s %d): %s%s%s\n",
+             HGL_LOG_RED_COLOR,
+             HGL_LOG_RESET_COLOR,
              file + HGL_LOG_FILE_OFFSET,
              line,
-             fmt);
+             HGL_LOG_WHITE_COLOR,
+             fmt,
+             HGL_LOG_RESET_COLOR);
     break;
   }
   
   va_start(args, fmt);
-  vprintf(msg, args);
+  if(isErr){
+    vfprintf(stderr, msg, args);
+  }else{
+    vfprintf(stdout, msg, args);
+  }
   va_end(args);
 }
 
