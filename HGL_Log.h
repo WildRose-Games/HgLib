@@ -68,8 +68,19 @@ typedef enum HglLogType{
 
 void HGL_LogFunc(HglLogType err, char* file, int line, char* fmt, ...);
 
+
+#ifdef _MSC_VER /* Windows */
+
+/* Color ANSI not supported in Windows */
+#ifdef HGL_LOG_USE_COLOR
+#undef HGL_LOG_USE_COLOR
+#endif /*HGL_LOG_USE_COLOR*/
+
+#endif /* _MSC_VER */
+
 #ifdef HGL_LOG_USE_COLOR
 
+/* Linux/BSD/Mac/whatever */
 #define HGL_LOG_BLACK_COLOR "\033[1;30m"
 #define HGL_LOG_RED_COLOR "\033[1;31m"
 #define HGL_LOG_GREEN_COLOR "\033[1;32m"
