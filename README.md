@@ -1,4 +1,4 @@
-# Hgl (Hg Libraries)
+# HgLib
 
 A collection of my single-file libraries I use for my minimalist game engine, Mercury. 
 
