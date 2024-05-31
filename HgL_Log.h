@@ -7,14 +7,14 @@
  *  No warranty implied; use at your own risk
  *
  *  TO CREATE THE IMPLEMENTATION:
- *  define HGL_LOG_IMPLEMENTATION before including HGL_Log.h
+ *  define HGL_LOG_IMPLEMENTATION before including HgL_Log.h
  *
  *    Example:
  *
  *    #include ...
  *    #include ...
  *    #define HGL_LOG_IMPLEMENTATION
- *    #include "HGL_Log.h"
+ *    #include "HgL_Log.h"
  *    #include ...
  */
 
@@ -48,18 +48,27 @@
  *  if all files are inside of one source folder (i.e: src/)
  *  you can remove that from file location printing by changing
  *  HGL_LOG_FILE_OFFSET to remove that number of characters.
- *  
- *  To remove LOG calls from all builds that do not define HG_DEBUG
+ */
+#define HGL_LOG_FILE_OFFSET 0
+
+ /*  To remove LOG calls from all builds that do not define HG_DEBUG
  *  comment out HGL_LOG_BUILD_IN_RELEASE 
  */
 
 #define HGL_LOG_BUILD_IN_RELEASE
 
+/*
+ * To remove color support, 
+ * comment out HGL_LOG_USE_COLOR
+ */
+
 #define HGL_LOG_USE_COLOR
 
-#define HGL_LOG
+/*
+ * END OF DOCUMENTATION
+ */
 
-/*Don;t use HglLogType or HGL_LogFunc directly*/
+/*Don't use HglLogType or HGL_LogFunc directly*/
 typedef enum HglLogType{
   HGL_LOG_DBG,
   HGL_LOG_LOG,
@@ -111,7 +120,7 @@ void HGL_LogFunc(HglLogType err,
 
 #endif /* HGL_LOG_USE_COLOR */
 
-#ifdef HG_DEBUG 
+#ifdef HG_BUILD_DEBUG 
 
 #define HG_LOG(...) HGL_LogFunc(HGL_LOG_LOG, __FILE__, __LINE__, \
     __VA_ARGS__)
@@ -146,7 +155,7 @@ void HGL_LogFunc(HglLogType err,
 #define HG_FATAL(...)
 
 #endif /* HGL_LOG_BUILD_IN_RELEASE */
-#endif /* HG_DEBUG */
+#endif /* HG_BUILD_DEBUG */
 #endif /* HGL_LOG_H */
 
 /**************************************************************************/
@@ -159,7 +168,6 @@ void HGL_LogFunc(HglLogType err,
 #include <stdarg.h>
 #include <stdio.h>
 
-#define HGL_LOG_FILE_OFFSET 0
 
 /*
  * hg_logFunction should not be called manually, use helper macros.

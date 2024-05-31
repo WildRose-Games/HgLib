@@ -11,8 +11,8 @@
 #define HGL_LOG_IMPLEMENTATION
 #include "../HgL_Log.h"
 
-#define HGL_MEMORY_IMPLEMENTATION
-#include "../HgL_Memory.h"
+#define HGL_ARENA_IMPLEMENTATION
+#include "../HgL_Arena.h"
 
 int main(void){
 
@@ -34,76 +34,62 @@ int main(void){
   
 /* HGL_Memory.h */
   printf("\n");
-  HG_LOG("Testing HgL_Memory.h");
-  HG_LOG("Testing HgArena basic usage:");
-  printf("\n");
+  HG_LOG("Testing HgL_Arena.h");
   {
 
     /* Basic usage, filling too much */
-    HG_LOG("Allocating arena with init size of 20, mem multiple of 8");
+    HG_LOG("Creating and allocating arena, pushing some memory to.");
   
     HgArena* arena = hgCreateArena(20, 8); 
-    HG_LOG("Pushing some memory for int* i");
   
-    int* i = hgArenaPush(arena, sizeof(int));
+    int* i = (int*)hgArenaPush(arena, sizeof(int));
     *i = 10;
-    HG_LOG("int* i has value: %d", *i);
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
-    HG_LOG("Pushing some more memory for int* j");
   
-    int* j = hgArenaPush(arena, sizeof(int));
+    int* j = (int*)hgArenaPush(arena, sizeof(int));
     *j = 20;
-    HG_LOG("int* i value =  %d, int* j value = %d", *i, *j);
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
-    HG_LOG("Pushing some more memory past initialization");
+    HG_LOG("Pushing some more memory past max (Should error)");
   
-    int* k = hgArenaPush(arena, sizeof(int));
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
+    int* k = (int*)hgArenaPush(arena, sizeof(int));
     hgDestroyArena(arena);
   }
-  printf("\n");
-  HG_LOG("Pushing and Poping in correct order");
+  {
+    HG_LOG("Trying to push and pop some memory in correct order");
+    HgArena* arena = hgCreateArena(100, 1);
+    int* i = (int*)hgArenaPush(arena, sizeof(int));
+    int* j = (int*)hgArenaPush(arena, sizeof(int));
+    int* k = (int*)hgArenaPush(arena, sizeof(int));
+    
+    hgArenaPop(arena, k, sizeof(int));
+    hgArenaPop(arena, j, sizeof(int));
+    hgArenaPop(arena, i, sizeof(int));
+
+    hgDestroyArena(arena);
+  }
+  HG_LOG("Pushing and Poping in wrong order (should error twice on debug build)");
   {
     HgArena* arena = hgCreateArena(100, 1);
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
-    int* i = hgArenaPush(arena, sizeof(int));
-    int* j = hgArenaPush(arena, sizeof(int));
-    int* k = hgArenaPush(arena, sizeof(int));
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
+    int* i = (int*)hgArenaPush(arena, sizeof(int));
+    int* j = (int*)hgArenaPush(arena, sizeof(int));
+    int* k = (int*)hgArenaPush(arena, sizeof(int));
     
-    hgArenaPop(arena, k);
-    hgArenaPop(arena, j);
-    hgArenaPop(arena, i);
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
-
+    hgArenaPop(arena, i, sizeof(int));
+    hgArenaPop(arena, j, sizeof(int));
 
     hgDestroyArena(arena);
   }
-  HG_LOG("Pushing and Poping in wrong order");
+  HG_LOG("Testing offsets");
   {
-    HgArena* arena = hgCreateArena(100, 1);
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
-    int* i = hgArenaPush(arena, sizeof(int));
-    int* j = hgArenaPush(arena, sizeof(int));
-    int* k = hgArenaPush(arena, sizeof(int));
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
+  
+    HgArena* arena = hgCreateArena(50, 10);
+    int* i = (int*)hgArenaPush(arena, sizeof(int));
+    int* j = (int*)hgArenaPush(arena, sizeof(int));
+    int* k = (int*)hgArenaPush(arena, sizeof(int));
     
-    hgArenaPop(arena, i);
-    hgArenaPop(arena, j);
-    HG_LOG("Arena is at position: %d, size: %d", arena->dataPosition,
-        arena->dataSize);
+    hgArenaPop(arena, k, sizeof(int));
+    hgArenaPop(arena, j, sizeof(int));
+    hgArenaPop(arena, i, sizeof(int));
 
     hgDestroyArena(arena);
   }
-  
-
   return 0;
 }
