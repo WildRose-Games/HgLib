@@ -1,6 +1,6 @@
 # HgLib
 
-A collection of my single-file libraries I use for my minimalist game engine, Mercury. 
+A collection of my single-file libraries I use for my game engine, Mercury. 
 
 Inspired by [stb](https://github.com/nothings/stb). Each library file contains it's own documentation. Just copy a file into your project and include it.
 
