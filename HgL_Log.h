@@ -51,7 +51,7 @@
  */
 #define HGL_LOG_FILE_OFFSET 0
 
- /*  To remove LOG calls from all builds that do not define HG_DEBUG
+ /*  To remove LOG calls from all builds that do not define HG_BUILD_DEBUG
  *  comment out HGL_LOG_BUILD_IN_RELEASE 
  */
 
